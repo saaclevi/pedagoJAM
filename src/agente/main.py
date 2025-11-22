@@ -41,7 +41,6 @@ if __name__ == "__main__":
     resposta = {"resposta": ""}
 
     if data["acao"] == "criar_sala":
-        prompt = "prompt da sla"
         resposta["resposta"] = "Sala criada com sucesso"
 
     elif data["acao"] == "adicionar_aluno":
