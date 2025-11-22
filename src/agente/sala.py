@@ -9,7 +9,7 @@ class Sala:
         self.pdfs = []
 
     def __str__(self):
-        json.dumps({
+        return json.dumps({
             "nome": self.nome,
             "alunos": [str(aluno) for aluno in self.alunos],
             "materia": self.materia,
