@@ -2,11 +2,13 @@
 import sys
 import json
 
+import sala
+
 # JSON para criar a classe Sala
 # {
 #     "acao": "criar_sala",
 #     "sala": {
-#         "nome": String,
+#         "ano": String,
 #         "alunos": [
 #                 { "nome": String,
 #                  "cadastro": Integer
@@ -35,10 +37,34 @@ import json
 #     }
 # }
 
+salas = []
 
 if __name__ == "__main__":
     # Recieve json from stdin
     input_data = sys.stdin.read()
     data = json.loads(input_data)
 
-    print(json.dumps(data, indent=4))
+    if data["acao"] == "criar_sala":
+        # Create a new Sala
+        nova_sala = sala.Sala(
+            data["sala"]["ano"],
+            data["sala"].get("alunos", []),
+            data["sala"].get("materia", None),
+        )
+        data["sala"] = sala
+
+    elif data["acao"] == "adicionar_aluno":
+        # Find the Sala
+        for s in salas:
+            if s.nome == data["sala"]:
+                s.adicionar_aluno(data["aluno"])
+                data["sala"] = s
+                break
+
+    elif data["acao"] == "adicionar_pdf":
+        # Find the Sala
+        for s in salas:
+            if s.nome == data["sala"]:
+                s.adicionar_pdf(data["pdf"])
+                data["sala"] = s
+                break
