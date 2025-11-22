@@ -39,13 +39,7 @@ if __name__ == "__main__":
     data = json.loads(input_data)
 
     if data["acao"] == "criar_sala":
-        # Create a new Sala
-        nova_sala = sala.Sala(
-            data["sala"]["ano"],
-            data["sala"].get("alunos", []),
-            data["sala"].get("materia", None),
-        )
-        data["sala"] = sala
+        prompt = "prompt da sla"
 
     elif data["acao"] == "adicionar_aluno":
         # Find the Sala

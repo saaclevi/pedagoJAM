@@ -8,15 +8,6 @@ import { Boom } from "@hapi/boom";
 import P from "pino";
 import qrcode from "qrcode-terminal";
 
-const acoes = {
-    criar_sala: (text) => {
-        // Extrai informações da mensagem para criar uma serializea
-    }
-}
-
-function seletorDeAcoes(text) {
-    acoes[text.split(" ")[0]](text);
-}
 
 
 const fetch = (...args) =>
@@ -72,19 +63,17 @@ async function startBot() {
       m.message.extendedTextMessage?.text ||
       "";
 
-        // JSON para criar a classe Sala
-        // {
-        //     "acao": "criar_sala",
-        //     "sala": {
-        //         "ano": String,
-        //         "alunos": [
-        //                  String
-        //             ]
-        //         "materia": String
-        //     }
-        // }
-
-    const input = seletorDeAcoes(text);;
+    // JSON para criar a classe Sala
+    // {
+    //     "acao": "criar_sala",
+    //     "sala": {
+    //         "ano": String,
+    //         "alunos": [
+    //                  String
+    //             ]
+    //         "materia": String
+    //     }
+    // }
 
 
     // gets the command text and convets it to the right json 
