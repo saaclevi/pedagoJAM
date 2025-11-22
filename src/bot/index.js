@@ -76,10 +76,6 @@ async function startBot() {
     // }
 
 
-    // gets the command text and convets it to the right json 
-    text.trim()
-    const IPCInput = JSON.stringify(input);
-
     // ==============================
     //   COMUNICAÇÃO COM O PYTHON
     // ==============================
@@ -103,6 +99,10 @@ async function startBot() {
             data = JSON.parse( await resposta );
         } catch {
             throw new Error("Resposta do Python não é um JSON válido!");
+    // gets the command text and convets it to the right json 
+    text.trim()
+    const IPCInput = JSON.stringify(input);
+
         }
 
         if (!data.resposta) {
