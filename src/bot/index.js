@@ -7,6 +7,7 @@ import {
 import { Boom } from "@hapi/boom";
 import P from "pino";
 import qrcode from "qrcode-terminal";
+import { spawn } from "child_process";
 
 const fetch = (...args) =>
   import("node-fetch").then(({ default: fetch }) => fetch(...args));
@@ -73,38 +74,42 @@ async function startBot() {
     //     }
     // }
 
+    // gets the command text and converts it to the right json 
+    const input = { acao: "criar_sala", sala: text.trim() };
+    const IPCInput = JSON.stringify(input);
 
     // ==============================
     //   COMUNICAÇÃO COM O PYTHON
     // ==============================
     try {
-        // call the pyton script
+        // call the python script
         const resposta = new Promise ( (resolve, reject) => {
-            const process = import("child_process").spawn( "python3", ["../agente/main.py", IPCInput] ); 
+            const process = spawn( "python3", ["../agente/main.py"] ); 
+            
+            // Send JSON input via stdin
+            process.stdin.write(IPCInput);
+            process.stdin.end();
+            
             process.stdout.on('data', (data) => {
                 resolve(data.toString());
-            }
-            );
+            });
 
             process.stderr.on('data', (data) => {
                 reject(data.toString());
-            }
-            );
+            });
         });
 
         let data;
         try {
             data = JSON.parse( await resposta );
-        } catch {
-            console.error("Resposta do Python não é um JSON válido!");
-    // gets the command text and convets it to the right json 
-    text.trim()
-    const IPCInput = JSON.stringify(input);
-
+        } catch (parseErr) {
+            console.error("Resposta do Python não é um JSON válido!", parseErr);
+            throw new Error("Resposta inválida do Python");
         }
 
         if (!data.resposta) {
             console.error("O campo 'resposta' não veio no JSON do Python!");
+            throw new Error("Formato de resposta inválido");
         }
 
         // ==============================
