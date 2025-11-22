@@ -8,8 +8,6 @@ import { Boom } from "@hapi/boom";
 import P from "pino";
 import qrcode from "qrcode-terminal";
 
-
-
 const fetch = (...args) =>
   import("node-fetch").then(({ default: fetch }) => fetch(...args));
 
@@ -98,7 +96,7 @@ async function startBot() {
         try {
             data = JSON.parse( await resposta );
         } catch {
-            throw new Error("Resposta do Python não é um JSON válido!");
+            console.error("Resposta do Python não é um JSON válido!");
     // gets the command text and convets it to the right json 
     text.trim()
     const IPCInput = JSON.stringify(input);
@@ -106,22 +104,22 @@ async function startBot() {
         }
 
         if (!data.resposta) {
-            throw new Error("O campo 'resposta' não veio no JSON do Python!");
+            console.error("O campo 'resposta' não veio no JSON do Python!");
         }
 
         // ==============================
             //    ENVIO DA RESPOSTA
         // ==============================
             await sock.sendMessage(sender, { text: data.resposta });
-        console.log(`😼Resposta enviada ao usuário: ${data.resposta}`);
+        console.log(`Resposta enviada ao usuário: ${data.resposta}`);
     } catch (err) {
-      console.error("❌ Erro ao comunicar com Python ou enviar resposta:", err);
+      console.error(" Erro ao comunicar com Python ou enviar resposta:", err);
       try {
         await sock.sendMessage(sender, {
-          text: "⚠️ Erro ao processar sua mensagem, tente novamente."
+          text: "Erro ao processar sua mensagem, tente novamente."
         });
       } catch (sendErr) {
-        console.error("❌ Falha ao enviar mensagem de erro:", sendErr);
+        console.error("Falha ao enviar mensagem de erro:", sendErr);
       }
     }
   });

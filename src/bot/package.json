@@ -1,4 +1,4 @@
-if {
+{
     "type": "module",
     "name": "meu-bot-baileys",
     "version": "1.0.0",
@@ -13,3 +13,4 @@ if {
         "qrcode-terminal": "^0.12.0"
     }
 }
+    inininin
