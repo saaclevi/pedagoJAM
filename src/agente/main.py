@@ -7,7 +7,8 @@ import sala
 # JSON para criar a classe Sala
 # {
 #     "acao": "criar_sala",
-#     "sala": {
+#     "dado": "{
+#         "sala": {
 #         "ano": String,
 #         "alunos": [
 #                 { "nome": String,
@@ -15,26 +16,19 @@ import sala
 #                 }
 #             ]
 #         "materia": String
-#     }
+#     }"
 # }
 
 # Json para executar um comando
 # {
 #     "acao": "adicionar_aluno",
-#     "sala": String,
-#     "aluno": {
-#         "nome": String,
-#         "cadastro": Integer
-#     }
-# }
-
-# Json para adicionar PDF
-# {
-#     "sala": String,
-#     "pdf": {
-#         "nome": String,
-#         "url": String
-#     }
+#     "dado": "{
+#        "sala": String,
+#        "aluno": {
+#            "nome": String,
+#            "cadastro": Integer
+#        }
+#     }"
 # }
 
 salas = []

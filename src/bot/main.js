@@ -8,6 +8,16 @@ import { Boom } from "@hapi/boom";
 import P from "pino";
 import qrcode from "qrcode-terminal";
 
+const acoes = {
+    criar_sala: (text) => {
+        // Extrai informações da mensagem para criar uma serializea
+    }
+}
+
+function seletorDeAcoes(text) {
+    acoes[text.split(" ")[0]](text);
+}
+
 
 const fetch = (...args) =>
   import("node-fetch").then(({ default: fetch }) => fetch(...args));
@@ -62,52 +72,61 @@ async function startBot() {
       m.message.extendedTextMessage?.text ||
       "";
 
-    //console.log("======================================");
-    //console.log(` Nova mensagem recebida de: ${sender}`);
-    //console.log(` Conteúdo: ${text}`);
-    //console.log("======================================");
+        // JSON para criar a classe Sala
+        // {
+        //     "acao": "criar_sala",
+        //     "sala": {
+        //         "ano": String,
+        //         "alunos": [
+        //                  String
+        //             ]
+        //         "materia": String
+        //     }
+        // }
 
-    // TESTE: responde imediatamente (para ver se o envio funciona)
-    //try {
-    //  await sock.sendMessage(sender, { text: "✅ Mensagem recebida! Processando..." });
-    //  console.log("📤 Mensagem de confirmação enviada.");
-    //} catch (err) {
-    //  console.error("❌ Erro ao enviar mensagem de confirmação:", err);
-    //}
+    const input = seletorDeAcoes(text);;
+
+
+    // gets the command text and convets it to the right json 
+    text.trim()
+    const IPCInput = JSON.stringify(input);
 
     // ==============================
-    //   COMUNICAÇÃO COM O FLASK
+    //   COMUNICAÇÃO COM O PYTHON
     // ==============================
     try {
-      const resposta = await fetch("http://127.0.0.1:5000/mensagem", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ usuario: sender, mensagem: text })
-      });
+        // call the pyton script
+        const resposta = new Promise ( (resolve, reject) => {
+            const process = import("child_process").spawn( "python3", ["../agente/main.py", IPCInput] ); 
+            process.stdout.on('data', (data) => {
+                resolve(data.toString());
+            }
+            );
 
-      console.log("Status da API Flask:", resposta.status);
+            process.stderr.on('data', (data) => {
+                reject(data.toString());
+            }
+            );
+        });
 
-      const texto = await resposta.text();
-      console.log("Corpo retornado pelo Flask:", texto);
+        let data;
+        try {
+            data = JSON.parse( await resposta );
+        } catch {
+            throw new Error("Resposta do Python não é um JSON válido!");
+        }
 
-      let data;
-      try {
-        data = JSON.parse(texto);
-      } catch {
-        throw new Error("O Flask não retornou JSON válido!");
-      }
+        if (!data.resposta) {
+            throw new Error("O campo 'resposta' não veio no JSON do Python!");
+        }
 
-      if (!data.resposta) {
-        throw new Error("O campo 'resposta' não veio no JSON do Flask!");
-      }
-
-      // ==============================
-      //    ENVIO DA RESPOSTA
-      // ==============================
-      await sock.sendMessage(sender, { text: data.resposta });
-      console.log(`😼Resposta enviada ao usuário: ${data.resposta}`);
+        // ==============================
+            //    ENVIO DA RESPOSTA
+        // ==============================
+            await sock.sendMessage(sender, { text: data.resposta });
+        console.log(`😼Resposta enviada ao usuário: ${data.resposta}`);
     } catch (err) {
-      console.error("❌ Erro ao comunicar com Flask ou enviar resposta:", err);
+      console.error("❌ Erro ao comunicar com Python ou enviar resposta:", err);
       try {
         await sock.sendMessage(sender, {
           text: "⚠️ Erro ao processar sua mensagem, tente novamente."
